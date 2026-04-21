@@ -1,8 +1,11 @@
 # CivicOps AI Agent
 
-[![CI](https://github.com/LuffiIdrisSetiawan0/CivicOps-AI-Agent/actions/workflows/ci.yml/badge.svg)](https://github.com/LuffiIdrisSetiawan0/CivicOps-AI-Agent/actions/workflows/ci.yml)
-
 Portfolio project for an **AI Engineer / LLM Engineer** role. CivicOps AI Agent is a Python-first assistant that analyzes synthetic regional public-service operations data using SQL tools, policy document retrieval, mock API signals, guardrails, and golden-question evaluation.
+
+Local quality checks:
+
+- Ruff: passing
+- Pytest: 9 passed
 
 The internal app name is **SatuData Ops Agent** because the demo scenario is inspired by Indonesian public-sector data operations.
 
@@ -247,4 +250,3 @@ tests/                 pytest coverage
 - Add frontend screenshots and a hosted demo link.
 - Add structured logging for route choice, tool calls, latency, and fallback reasons.
 - Replace remaining frontend `innerHTML` rendering with safer DOM construction.
-
