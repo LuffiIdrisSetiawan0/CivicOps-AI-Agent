@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SatuData Ops Agent</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div>
+          <p class="eyebrow">Portfolio MVP</p>
+          <h1>SatuData Ops Agent</h1>
+          <p class="sidebar-copy">SQL, policy retrieval, complaint logs, mock API signals, and agent trace.</p>
+        </div>
+
+        <nav class="nav-stack" aria-label="Primary">
+          <button class="nav-button active" data-view="workspace">Workspace</button>
+          <button class="nav-button" data-view="datasets">Datasets</button>
+          <button class="nav-button" data-view="evaluation">Evaluation</button>
+        </nav>
+
+        <div class="status-block">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="health-text">Checking service</span>
+        </div>
+      </aside>
+
+      <main class="main-surface">
+        <section id="workspace-view" class="view active">
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">Agent workspace</p>
+              <h2>Ask across regional operations data</h2>
+            </div>
+            <button id="clear-button" class="secondary-button">Clear</button>
+          </header>
+
+          <div class="workspace-grid">
+            <section class="conversation-panel" aria-label="Chat workspace">
+              <div id="messages" class="messages">
+                <article class="message assistant">
+                  <p>Ask about backlog, SLA, budget realization, complaint topics, policy escalation, or regional risk.</p>
+                </article>
+              </div>
+              <form id="chat-form" class="composer">
+                <textarea
+                  id="question-input"
+                  rows="3"
+                  placeholder="Example: Gabungkan backlog dan aturan eskalasi SLA untuk rekomendasi operasi."
+                ></textarea>
+                <button id="send-button" type="submit">Run Agent</button>
+              </form>
+            </section>
+
+            <aside class="evidence-panel" aria-label="Evidence">
+              <section>
+                <div class="section-heading">
+                  <h3>SQL Preview</h3>
+                  <span id="sql-count">No query</span>
+                </div>
+                <div id="sql-preview" class="code-box">Run a question that needs structured data.</div>
+              </section>
+
+              <section>
+                <div class="section-heading">
+                  <h3>Citations</h3>
+                  <span id="citation-count">0 docs</span>
+                </div>
+                <div id="citations" class="stack-list muted">No citations yet.</div>
+              </section>
+
+              <section>
+                <div class="section-heading">
+                  <h3>Agent Trace</h3>
+                  <span id="trace-count">0 steps</span>
+                </div>
+                <div id="trace" class="stack-list muted">Trace appears after a run.</div>
+              </section>
+            </aside>
+          </div>
+        </section>
+
+        <section id="datasets-view" class="view">
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">Data catalog</p>
+              <h2>Available synthetic sources</h2>
+            </div>
+            <button id="refresh-datasets" class="secondary-button">Refresh</button>
+          </header>
+          <div id="datasets-content" class="catalog-layout">Loading dataset metadata.</div>
+        </section>
+
+        <section id="evaluation-view" class="view">
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">Quality checks</p>
+              <h2>Golden-question evaluation</h2>
+            </div>
+            <button id="run-eval" class="primary-button">Run Eval</button>
+          </header>
+          <div id="eval-summary" class="eval-summary">Target: pass at least 16 of 20 scenarios.</div>
+          <div id="eval-results" class="eval-results muted">No evaluation run yet.</div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+
