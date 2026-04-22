@@ -1,18 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SatuData Ops Agent</title>
-    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/styles.css?v=__STATIC_VERSION__" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <div>
+        <div class="sidebar-top">
           <p class="eyebrow">Portfolio MVP</p>
           <h1>SatuData Ops Agent</h1>
-          <p class="sidebar-copy">SQL, policy retrieval, complaint logs, mock API signals, and agent trace.</p>
+          <p class="sidebar-copy">
+            Regional operations copilot with SQL analytics, policy retrieval, complaint signals,
+            and demo-safe guardrails.
+          </p>
         </div>
 
         <nav class="nav-stack" aria-label="Primary">
@@ -21,9 +24,19 @@
           <button class="nav-button" data-view="evaluation">Evaluation</button>
         </nav>
 
-        <div class="status-block">
-          <span class="status-dot" id="status-dot"></span>
-          <span id="health-text">Checking service</span>
+        <div class="sidebar-foot">
+          <div class="sidebar-meta">
+            <span class="sidebar-meta-label">Demo default</span>
+            <strong id="default-mode-text">Checking mode</strong>
+          </div>
+          <div class="sidebar-meta">
+            <span class="sidebar-meta-label">Snapshot</span>
+            <strong id="snapshot-month-label">Loading data</strong>
+          </div>
+          <div class="status-block">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="health-text">Checking service</span>
+          </div>
         </div>
       </aside>
 
@@ -31,53 +44,148 @@
         <section id="workspace-view" class="view active">
           <header class="topbar">
             <div>
-              <p class="eyebrow">Agent workspace</p>
-              <h2>Ask across regional operations data</h2>
+              <p class="eyebrow">Operations Workspace</p>
+              <h2>Regional service ops board</h2>
             </div>
-            <button id="clear-button" class="secondary-button">Clear</button>
+            <div class="topbar-actions">
+              <div class="mode-control" aria-label="Answer mode">
+                <button id="mode-chat" class="mode-button" type="button" data-answer-mode="chat">Chat</button>
+                <button id="mode-fast" class="mode-button" type="button" data-answer-mode="fast">Fast</button>
+                <button id="mode-polish" class="mode-button active" type="button" data-answer-mode="polish">Polish</button>
+              </div>
+              <button id="clear-button" class="secondary-button">Clear</button>
+            </div>
           </header>
+
+          <section class="summary-band" aria-label="Operations snapshot">
+            <div class="summary-copy">
+              <p class="eyebrow">Latest Snapshot</p>
+              <h3 id="summary-heading">Loading operating picture</h3>
+              <p id="summary-note">Loading the latest operational summary.</p>
+            </div>
+            <div id="stat-grid" class="stat-grid" aria-live="polite">
+              <article class="stat-item muted">Loading KPI snapshot.</article>
+            </div>
+          </section>
 
           <div class="workspace-grid">
             <section class="conversation-panel" aria-label="Chat workspace">
+              <div class="prompt-strip">
+                <div>
+                  <p class="eyebrow">Suggested Scenarios</p>
+                  <h3>Start with a high-signal question</h3>
+                </div>
+                <div id="suggested-questions" class="question-chips" aria-live="polite">
+                  <button class="question-chip" type="button">Loading prompts</button>
+                </div>
+              </div>
+
               <div id="messages" class="messages">
-                <article class="message assistant">
-                  <p>Ask about backlog, SLA, budget realization, complaint topics, policy escalation, or regional risk.</p>
+                <article
+                  class="message assistant"
+                  data-raw-content="Tanyakan apa saja. Untuk topik operasional daerah, saya akan memakai data, kebijakan, dan sinyal risiko yang tersedia."
+                >
+                  <div class="message-content">
+                    <p>Tanyakan apa saja. Untuk topik operasional daerah, saya akan memakai data, kebijakan, dan sinyal risiko yang tersedia.</p>
+                  </div>
                 </article>
               </div>
               <form id="chat-form" class="composer">
                 <textarea
                   id="question-input"
                   rows="3"
-                  placeholder="Example: Gabungkan backlog dan aturan eskalasi SLA untuk rekomendasi operasi."
+                  aria-label="Pertanyaan operasional"
+                  placeholder="Tanyakan apa saja, misalnya: Gabungkan backlog dan aturan eskalasi SLA untuk rekomendasi operasi."
                 ></textarea>
-                <button id="send-button" type="submit">Run Agent</button>
+                <button id="send-button" type="submit">Send</button>
               </form>
             </section>
 
-            <aside class="evidence-panel" aria-label="Evidence">
+            <aside class="insight-panel" aria-label="Operational context">
               <section>
                 <div class="section-heading">
-                  <h3>SQL Preview</h3>
-                  <span id="sql-count">No query</span>
+                  <h3>Trend and posture</h3>
+                  <span id="trend-period">Loading</span>
                 </div>
-                <div id="sql-preview" class="code-box">Run a question that needs structured data.</div>
+                <div id="trend-chart" class="trend-chart">Loading trend.</div>
+                <div class="trend-foot">
+                  <p id="trend-caption">Loading backlog and satisfaction trend.</p>
+                  <strong id="severity-caption">Loading severity summary.</strong>
+                </div>
               </section>
 
               <section>
                 <div class="section-heading">
-                  <h3>Citations</h3>
-                  <span id="citation-count">0 docs</span>
+                  <h3>Regional watchlist</h3>
+                  <span id="hotspot-count">0 hotspots</span>
                 </div>
-                <div id="citations" class="stack-list muted">No citations yet.</div>
+                <div id="hotspots" class="stack-list muted">Loading watchlist.</div>
               </section>
 
               <section>
                 <div class="section-heading">
-                  <h3>Agent Trace</h3>
-                  <span id="trace-count">0 steps</span>
+                  <h3>Budget pressure</h3>
+                  <span id="budget-count">0 items</span>
                 </div>
-                <div id="trace" class="stack-list muted">Trace appears after a run.</div>
+                <div id="budget-watchlist" class="stack-list muted">Loading budget watchlist.</div>
               </section>
+
+              <details id="technical-details" class="technical-panel">
+                <summary>
+                  <span>Technical evidence</span>
+                  <span id="technical-summary">Route idle</span>
+                </summary>
+                <div class="technical-body">
+                  <section>
+                    <div class="section-heading">
+                      <h3>Run Summary</h3>
+                      <span id="run-mode">Polish</span>
+                    </div>
+                    <div class="meta-grid">
+                      <div>
+                        <span>Route</span>
+                        <strong id="run-route">Idle</strong>
+                      </div>
+                      <div>
+                        <span>Latency</span>
+                        <strong id="run-latency">--</strong>
+                      </div>
+                      <div>
+                        <span>Confidence</span>
+                        <strong id="run-confidence">--</strong>
+                      </div>
+                      <div>
+                        <span>OpenAI</span>
+                        <strong id="run-openai">Off</strong>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section>
+                    <div class="section-heading">
+                      <h3>SQL Preview</h3>
+                      <span id="sql-count">No query</span>
+                    </div>
+                    <div id="sql-preview" class="code-box">Run a question that needs structured data.</div>
+                  </section>
+
+                  <section>
+                    <div class="section-heading">
+                      <h3>Citations</h3>
+                      <span id="citation-count">0 docs</span>
+                    </div>
+                    <div id="citations" class="stack-list muted">No citations yet.</div>
+                  </section>
+
+                  <section>
+                    <div class="section-heading">
+                      <h3>Agent Trace</h3>
+                      <span id="trace-count">0 steps</span>
+                    </div>
+                    <div id="trace" class="stack-list muted">Trace appears after a run.</div>
+                  </section>
+                </div>
+              </details>
             </aside>
           </div>
         </section>
@@ -90,7 +198,7 @@
             </div>
             <button id="refresh-datasets" class="secondary-button">Refresh</button>
           </header>
-          <div id="datasets-content" class="catalog-layout">Loading dataset metadata.</div>
+          <div id="datasets-content" class="catalog-surface">Loading dataset metadata.</div>
         </section>
 
         <section id="evaluation-view" class="view">
@@ -101,13 +209,18 @@
             </div>
             <button id="run-eval" class="primary-button">Run Eval</button>
           </header>
-          <div id="eval-summary" class="eval-summary">Target: pass at least 16 of 20 scenarios.</div>
+          <div class="eval-hero">
+            <div class="eval-score">
+              <strong id="eval-pass-rate">--</strong>
+              <span>Target >= 16/20 scenarios</span>
+            </div>
+            <div id="eval-summary" class="eval-summary">Run the suite to inspect routing, grounding, and guardrail coverage.</div>
+          </div>
           <div id="eval-results" class="eval-results muted">No evaluation run yet.</div>
         </section>
       </main>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=__STATIC_VERSION__"></script>
   </body>
 </html>
-

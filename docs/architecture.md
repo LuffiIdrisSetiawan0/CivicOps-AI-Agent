@@ -6,7 +6,7 @@
 User question
   -> FastAPI /api/chat
     -> Router/Supervisor Agent
-      -> classify route: sql, document, hybrid, guardrail
+      -> classify route: general, sql, document, hybrid, guardrail, or unsupported
       -> SQL Data Analyst Agent
         -> read-only SQL templates
         -> SQLite tables
@@ -15,8 +15,10 @@ User question
         -> lexical retrieval fallback for local/offline mode
       -> Mock API Tool
         -> synthetic flood/network/operational signals
+      -> Conversational Agent
+        -> GPT-like chat response when OpenAI is configured
       -> Quality Checker Agent
-        -> checks evidence and grounding markers
+        -> checks evidence, grounding markers, and fallback behavior
     -> structured response for dashboard
 ```
 
@@ -38,11 +40,8 @@ User question
 
 ## OpenAI Integration
 
-When `OPENAI_API_KEY` is present, `SatuDataOpsAgent` uses the OpenAI Responses API with function tools:
+Chat mode is the default when `OPENAI_API_KEY` is present. It answers general questions like a normal GenAI chatbot, and uses local SQL/RAG/mock API evidence for civic operations questions.
 
-- `run_sql_analysis`
-- `search_policy_documents`
-- `get_mock_regional_signal`
+Fast mode is the deterministic local path. It uses routing, read-only SQL templates, cached lexical document retrieval, and mock API signals without calling OpenAI.
 
-When no key is present, deterministic fallback mode preserves the same public response shape.
-
+Polish mode runs the local grounded answer first, then sends it through one OpenAI Responses API call to improve wording. If OpenAI fails or times out, the fast answer is returned.

@@ -8,7 +8,7 @@ Target duration: 2-3 minutes.
 
 ## 2. Architecture
 
-"Di backend saya memakai FastAPI dan Python. Agent dibagi menjadi Router/Supervisor, SQL Data Analyst, Document/RAG Agent, dan Quality Checker. Jika OpenAI API key tersedia, aplikasi memakai Responses API dengan function tools. Jika tidak, fallback deterministic tetap menjaga demo berjalan."
+"Di backend saya memakai FastAPI dan Python. Agent dibagi menjadi Router/Supervisor, SQL Data Analyst, Document/RAG Agent, Conversational Agent, dan Quality Checker. Jika OpenAI API key tersedia, aplikasi memakai Responses API untuk chat seperti GenAI umum, sambil tetap mengambil bukti dari SQL, dokumen, dan mock API saat pertanyaan masuk ke domain operasional. Jika tidak, fallback deterministic tetap menjaga demo berjalan."
 
 ## 3. SQL Demo
 
@@ -51,4 +51,3 @@ Open Evaluation tab and run eval.
 ## 7. Closing
 
 "Project ini menunjukkan kemampuan Python, OpenAI SDK, LLM tool calling, SQL analytics, RAG, agent orchestration, guardrails, dan evaluation-driven improvement, sesuai kebutuhan AI Engineer di Nodewave."
-

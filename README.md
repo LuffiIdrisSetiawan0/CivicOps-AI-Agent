@@ -5,7 +5,7 @@ Portfolio project for an **AI Engineer / LLM Engineer** role. CivicOps AI Agent 
 Local quality checks:
 
 - Ruff: passing
-- Pytest: 9 passed
+- Pytest: 29 passed
 
 The internal app name is **SatuData Ops Agent** because the demo scenario is inspired by Indonesian public-sector data operations.
 
@@ -18,6 +18,8 @@ Users can ask operational questions in Indonesian or English, such as:
 - What is the escalation policy for high-severity complaints?
 - Which budget programs have low realization?
 - What operational risk should be prioritized for a specific region?
+
+The default runtime is **polish mode** when `OPENAI_API_KEY` is configured: the app runs the local SQL/RAG/mock-signal pipeline first, then uses one OpenAI call to tighten wording while preserving grounded evidence. **Chat mode** remains available for general chatbot behavior, and **Fast mode** remains available for instant local-only demos.
 
 The agent routes each question to the right tool path:
 
@@ -33,7 +35,7 @@ The agent routes each question to the right tool path:
 | --- | --- |
 | Python backend development | FastAPI service, SQLAlchemy models, typed Pydantic schemas |
 | LLM tool orchestration | Router/Supervisor, SQL Analyst, Document/RAG Agent, Quality Checker |
-| OpenAI SDK integration | Responses API function tools when `OPENAI_API_KEY` is configured |
+| OpenAI SDK integration | Responses API chat mode and optional answer polishing |
 | Retrieval-augmented generation | LlamaIndex + ChromaDB path with lexical fallback |
 | SQL and data analysis | SQLite operational schema and read-only query guardrails |
 | Evaluation-driven development | 20 golden questions covering SQL, RAG, hybrid, and guardrail scenarios |
@@ -43,7 +45,7 @@ The agent routes each question to the right tool path:
 
 - **Backend:** Python 3.11, FastAPI, Pydantic, SQLAlchemy
 - **Database:** SQLite for MVP demo data
-- **LLM / AI:** OpenAI SDK, Responses API tool calling
+- **LLM / AI:** OpenAI SDK, Responses API chat and answer polishing
 - **RAG:** LlamaIndex, ChromaDB, OpenAI embeddings
 - **Fallback mode:** deterministic router, SQL templates, lexical retrieval
 - **Frontend:** static HTML, CSS, JavaScript
@@ -60,7 +62,7 @@ Browser Dashboard
       -> SQL Data Analyst Agent
         -> SQLite synthetic operations tables
       -> Document / RAG Agent
-        -> LlamaIndex + ChromaDB or lexical retrieval fallback
+        -> cached lexical retrieval by default
       -> Mock Regional Signal Tool
         -> synthetic flood and network risk signals
       -> Quality Checker Agent
@@ -106,13 +108,13 @@ $env:OPENAI_MODEL="gpt-5-mini"
 uvicorn app.main:app --reload
 ```
 
-When `OPENAI_API_KEY` is present, the agent uses OpenAI Responses API function tools:
+When `OPENAI_API_KEY` is present, the dashboard enables **Polish** mode by default for demo runs.
 
-- `run_sql_analysis`
-- `search_policy_documents`
-- `get_mock_regional_signal`
+Runtime modes:
 
-If the OpenAI path fails, the app falls back to deterministic local routing so the demo remains usable.
+- `chat`: GPT-like conversation; uses local evidence for civic operations questions and answers general questions normally.
+- `fast`: deterministic local-only routing, SQL, lexical RAG, and mock API signals.
+- `polish`: runs the local tool pipeline first, then uses one OpenAI call to improve wording.
 
 ## API Endpoints
 
@@ -120,6 +122,7 @@ If the OpenAI path fails, the app falls back to deterministic local routing so t
 | --- | --- | --- |
 | `GET` | `/api/health` | Health and runtime status |
 | `POST` | `/api/chat` | Ask the agent a question |
+| `GET` | `/api/dashboard/summary` | KPI snapshot, trend, watchlist, and suggested questions for the UI |
 | `GET` | `/api/datasets/preview` | Preview available synthetic tables and documents |
 | `POST` | `/api/eval/run` | Run golden-question evaluation |
 
@@ -129,8 +132,10 @@ Example:
 Invoke-RestMethod -Method Post `
   -Uri http://127.0.0.1:8000/api/chat `
   -ContentType "application/json" `
-  -Body '{"question":"Gabungkan backlog dan aturan eskalasi SLA untuk rekomendasi operasi.","include_trace":true}'
+  -Body '{"question":"Gabungkan backlog dan aturan eskalasi SLA untuk rekomendasi operasi.","include_trace":true,"answer_mode":"chat"}'
 ```
+
+`answer_mode` is optional. The API defaults to `polish` when OpenAI is configured, otherwise `fast`. Use `chat` for open-ended chatbot behavior and `fast` for local-only responses.
 
 ## Demo Questions
 
@@ -179,7 +184,7 @@ Current local status:
 
 ```text
 Ruff: all checks passed
-Pytest: 9 passed
+Pytest: 29 passed
 ```
 
 ## CI
@@ -206,7 +211,7 @@ This repo includes a Dockerfile and Render blueprint.
 
 Required environment variables for hosted deployment:
 
-- `OPENAI_API_KEY` optional for local fallback mode, recommended for OpenAI tool-calling mode
+- `OPENAI_API_KEY` optional for local fallback mode, recommended for GPT-like chat mode
 - `OPENAI_MODEL`
 - `EMBEDDING_MODEL`
 - `DATABASE_URL`
@@ -245,8 +250,6 @@ tests/                 pytest coverage
 ## Roadmap
 
 - Add dependency lockfile for fully reproducible installs.
-- Add mocked OpenAI Responses API tests.
-- Improve out-of-domain answers so unavailable data is rejected more explicitly.
 - Add frontend screenshots and a hosted demo link.
 - Add structured logging for route choice, tool calls, latency, and fallback reasons.
-- Replace remaining frontend `innerHTML` rendering with safer DOM construction.
+- Add CI badge again after the GitHub Actions billing lock is resolved.
