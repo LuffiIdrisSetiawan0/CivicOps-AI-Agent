@@ -1,9 +1,13 @@
 .env
 .venv/
+.chrome-audit/
+.edge-audit/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.pyc
+htmlcov/
+coverage.xml
 data/*.db
 data/.demo_seed_version
 data/chroma/

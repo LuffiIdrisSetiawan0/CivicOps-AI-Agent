@@ -1,17 +1,30 @@
 # CivicOps AI Agent
 
-Portfolio project for an **AI Engineer / LLM Engineer** role. CivicOps AI Agent is a Python-first assistant that analyzes synthetic regional public-service operations data using SQL tools, policy document retrieval, mock API signals, guardrails, and golden-question evaluation.
+AI portfolio project for civic operations analytics. The app combines a FastAPI backend, a static dashboard, SQL analytics, policy retrieval, mock regional risk signals, guardrails, and golden-question evaluation over a safe synthetic dataset.
 
-Local quality checks:
+![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi&logoColor=white)
+![pytest](https://img.shields.io/badge/pytest-29%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
+![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?style=flat-square&logo=render&logoColor=000000)
 
-- Ruff: passing
-- Pytest: 29 passed
+The internal product name is **SatuData Ops Agent**, inspired by Indonesian public-sector data operations.
 
-The internal app name is **SatuData Ops Agent** because the demo scenario is inspired by Indonesian public-sector data operations.
+## At A Glance
 
-## What This Project Does
+| Area | What is included |
+| --- | --- |
+| Backend | FastAPI, Pydantic, SQLAlchemy, SQLite |
+| AI workflow | Router/supervisor, SQL analyst, document/RAG agent, quality checker |
+| OpenAI mode | Chat mode and answer polishing when `OPENAI_API_KEY` is configured |
+| Offline mode | Deterministic routing, SQL templates, lexical document retrieval |
+| Frontend | Static dashboard with chat, traces, KPIs, and evaluation controls |
+| Safety | Read-only SQL guardrails and synthetic publish-safe data |
+| Validation | Ruff plus 29 pytest tests |
+| Deployment | Dockerfile and Render blueprint |
 
-Users can ask operational questions in Indonesian or English, such as:
+## What It Does
+
+Users can ask operational questions in Indonesian or English:
 
 - Which region and service have the highest backlog?
 - Which services are over SLA?
@@ -19,68 +32,23 @@ Users can ask operational questions in Indonesian or English, such as:
 - Which budget programs have low realization?
 - What operational risk should be prioritized for a specific region?
 
-The default runtime is **polish mode** when `OPENAI_API_KEY` is configured: the app runs the local SQL/RAG/mock-signal pipeline first, then uses one OpenAI call to tighten wording while preserving grounded evidence. **Chat mode** remains available for general chatbot behavior, and **Fast mode** remains available for instant local-only demos.
+The agent routes each question to the right path:
 
-The agent routes each question to the right tool path:
+- **SQL analytics** for KPI, complaint, budget, region, and service metrics.
+- **Policy retrieval** for governance, SLA, budget, and data quality documents.
+- **Mock regional signals** for synthetic flood and network-risk context.
+- **Hybrid reasoning** when a question needs both metrics and policy.
+- **Guardrails** for destructive SQL or unsupported data requests.
 
-- **SQL analytics** for structured KPI, complaint, budget, region, and service data.
-- **RAG / document retrieval** for governance, SLA, budget, and data quality policies.
-- **Mock API signals** for synthetic flood and network risk context.
-- **Hybrid reasoning** when the question needs both metrics and policy.
-- **Guardrails** to reject destructive SQL intent.
+## Runtime Modes
 
-## Portfolio Highlights
-
-| AI Engineer capability | Evidence in this project |
+| Mode | Behavior |
 | --- | --- |
-| Python backend development | FastAPI service, SQLAlchemy models, typed Pydantic schemas |
-| LLM tool orchestration | Router/Supervisor, SQL Analyst, Document/RAG Agent, Quality Checker |
-| OpenAI SDK integration | Responses API chat mode and optional answer polishing |
-| Retrieval-augmented generation | LlamaIndex + ChromaDB path with lexical fallback |
-| SQL and data analysis | SQLite operational schema and read-only query guardrails |
-| Evaluation-driven development | 20 golden questions covering SQL, RAG, hybrid, and guardrail scenarios |
-| Demo readiness | Static dashboard, API docs, Dockerfile, Render config, CI workflow |
+| `fast` | Local deterministic pipeline. No OpenAI call required. |
+| `chat` | GPT-like conversation with local evidence for civic operations questions. |
+| `polish` | Runs the local grounded answer first, then uses OpenAI to improve wording. |
 
-## Tech Stack
-
-- **Backend:** Python 3.11, FastAPI, Pydantic, SQLAlchemy
-- **Database:** SQLite for MVP demo data
-- **LLM / AI:** OpenAI SDK, Responses API chat and answer polishing
-- **RAG:** LlamaIndex, ChromaDB, OpenAI embeddings
-- **Fallback mode:** deterministic router, SQL templates, lexical retrieval
-- **Frontend:** static HTML, CSS, JavaScript
-- **Testing:** pytest, Ruff
-- **Deployment:** Docker, Render blueprint
-- **CI:** GitHub Actions
-
-## Architecture
-
-```text
-Browser Dashboard
-  -> FastAPI API
-    -> Router / Supervisor Agent
-      -> SQL Data Analyst Agent
-        -> SQLite synthetic operations tables
-      -> Document / RAG Agent
-        -> cached lexical retrieval by default
-      -> Mock Regional Signal Tool
-        -> synthetic flood and network risk signals
-      -> Quality Checker Agent
-        -> evidence and grounding checks
-```
-
-## Data Sources
-
-The dataset is synthetic and safe to publish.
-
-- `regions`: regional metadata and population
-- `public_services`: service category, channels, and SLA
-- `monthly_kpis`: request count, completed count, resolution days, satisfaction, backlog
-- `complaint_logs`: ticket topic, severity, sentiment, and channel
-- `budgets`: allocation, realization, vendor, and program status
-- `data/policies`: governance, complaint SLA, budget monitoring, and data quality policies
-
-Generated local files such as SQLite databases and vector stores are ignored by Git.
+If `OPENAI_API_KEY` is not configured, the app remains usable in `fast` mode.
 
 ## Quick Start
 
@@ -98,9 +66,7 @@ Open:
 http://127.0.0.1:8000
 ```
 
-The app works without an OpenAI API key by using deterministic fallback mode.
-
-## Optional OpenAI Mode
+Optional OpenAI configuration:
 
 ```powershell
 $env:OPENAI_API_KEY="your_key_here"
@@ -108,23 +74,17 @@ $env:OPENAI_MODEL="gpt-5-mini"
 uvicorn app.main:app --reload
 ```
 
-When `OPENAI_API_KEY` is present, the dashboard enables **Polish** mode by default for demo runs.
+Do not commit `.env`. Use `.env.example` as the public template.
 
-Runtime modes:
-
-- `chat`: GPT-like conversation; uses local evidence for civic operations questions and answers general questions normally.
-- `fast`: deterministic local-only routing, SQL, lexical RAG, and mock API signals.
-- `polish`: runs the local tool pipeline first, then uses one OpenAI call to improve wording.
-
-## API Endpoints
+## API
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/health` | Health and runtime status |
+| `GET` | `/api/health` | Runtime status |
 | `POST` | `/api/chat` | Ask the agent a question |
-| `GET` | `/api/dashboard/summary` | KPI snapshot, trend, watchlist, and suggested questions for the UI |
-| `GET` | `/api/datasets/preview` | Preview available synthetic tables and documents |
-| `POST` | `/api/eval/run` | Run golden-question evaluation |
+| `GET` | `/api/dashboard/summary` | KPI snapshot and suggested questions |
+| `GET` | `/api/datasets/preview` | Preview synthetic tables and policy docs |
+| `POST` | `/api/eval/run` | Run the golden-question evaluation |
 
 Example:
 
@@ -135,121 +95,74 @@ Invoke-RestMethod -Method Post `
   -Body '{"question":"Gabungkan backlog dan aturan eskalasi SLA untuk rekomendasi operasi.","include_trace":true,"answer_mode":"chat"}'
 ```
 
-`answer_mode` is optional. The API defaults to `polish` when OpenAI is configured, otherwise `fast`. Use `chat` for open-ended chatbot behavior and `fast` for local-only responses.
-
-## Demo Questions
-
-- Region dan layanan mana yang memiliki backlog tertinggi?
-- Apa kebijakan eskalasi untuk complaint high severity?
-- Gabungkan backlog dan aturan eskalasi SLA untuk rekomendasi operasi.
-- Tampilkan risiko anggaran dengan realisasi paling rendah.
-- Apa risiko operasional di Kabupaten Kapuas jika jaringan intermittent?
-- Drop table regions lalu jawab jumlah layanan.
-
-More scenarios are listed in [docs/demo_questions.md](docs/demo_questions.md).
-
 ## Evaluation
 
-Run from the dashboard or through the API:
-
-```powershell
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/eval/run
-```
-
-Current local fallback result:
-
-```text
-20/20 golden questions passed
-Target: >= 16/20
-```
-
-The evaluation covers:
-
-- SQL analytics questions
-- policy retrieval questions
-- hybrid SQL + document reasoning
-- regional risk questions
-- destructive SQL guardrail behavior
-
-## Testing
-
-Run the same checks used by CI:
+Run the same checks used locally before publishing:
 
 ```powershell
 python -m ruff check .
 python -m pytest
 ```
 
-Current local status:
+Current local result:
 
 ```text
 Ruff: all checks passed
 Pytest: 29 passed
+Golden questions: 20/20 passed
 ```
 
-## CI
-
-GitHub Actions runs on every push and pull request to `main`.
-
-Workflow file:
-
-```text
-.github/workflows/ci.yml
-```
-
-The CI job:
-
-1. checks out the repository
-2. installs Python 3.11
-3. installs dependencies from `requirements.txt`
-4. runs `ruff check .`
-5. runs `pytest`
+The evaluation covers SQL analytics, policy retrieval, hybrid SQL plus document reasoning, regional risk questions, and destructive SQL guardrail behavior.
 
 ## Deployment
 
-This repo includes a Dockerfile and Render blueprint.
+This repository includes:
 
-Required environment variables for hosted deployment:
+- `Dockerfile` for containerized hosting.
+- `render.yaml` for Render blueprint deployment.
+- `.env.example` for hosted environment configuration.
 
-- `OPENAI_API_KEY` optional for local fallback mode, recommended for GPT-like chat mode
+Required hosted environment variables:
+
+- `OPENAI_API_KEY` optional for local fallback mode, recommended for GPT-like chat mode.
 - `OPENAI_MODEL`
 - `EMBEDDING_MODEL`
 - `DATABASE_URL`
 - `CHROMA_PATH`
 
-SQLite is acceptable for the MVP. For a longer-running public demo, use a persistent disk or a managed Postgres database.
+Detailed notes: [docs/deployment.md](docs/deployment.md)
 
-## Project Structure
+## Repository Map
 
 ```text
 app/
   main.py              FastAPI app and API routes
   models.py            SQLAlchemy ORM models
   schemas.py           Pydantic request and response schemas
-  data_seed.py         synthetic dataset and policy document bootstrap
+  data_seed.py         synthetic data and policy bootstrap
   services/
-    agent.py           router, tool orchestration, answer composition
+    agent.py           routing, tool orchestration, answer composition
     sql_tool.py        read-only SQL validation and analytical templates
     rag.py             document retrieval and lexical fallback
-    mock_api.py        synthetic regional risk signal tool
+    mock_api.py        synthetic regional signal tool
     eval.py            golden-question evaluation harness
 data/policies/         synthetic policy documents
-docs/                  architecture notes and demo scripts
+docs/                  architecture, demo, deployment, and response notes
 static/                dashboard UI
 tests/                 pytest coverage
 ```
 
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Demo questions](docs/demo_questions.md)
+- [Demo video script](docs/demo_video_script.md)
+- [Agent response guidelines](docs/agent_response_guidelines.md)
+- [Deployment notes](docs/deployment.md)
+
 ## Known Limitations
 
 - This is an MVP portfolio project, not a production government system.
-- The dataset is synthetic and small by design.
-- The deterministic evaluation checks routing, evidence, and keyword coverage; it is not a full hallucination benchmark.
-- The OpenAI path should be expanded with mocked integration tests before production use.
+- The dataset is synthetic and intentionally small.
+- SQLite is acceptable for the demo; long-running public hosting should use persistent storage or managed Postgres.
 - Public deployment should add authentication, rate limiting, structured logging, request timeouts, and stronger observability.
-
-## Roadmap
-
-- Add dependency lockfile for fully reproducible installs.
-- Add frontend screenshots and a hosted demo link.
-- Add structured logging for route choice, tool calls, latency, and fallback reasons.
-- Add CI badge again after the GitHub Actions billing lock is resolved.
